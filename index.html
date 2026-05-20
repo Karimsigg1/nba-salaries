@@ -1,17 +1,88 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>NBA Team Rosters</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; }
-    header { background: #1a1f2e; border-bottom: 2px solid #f97316; padding: 16px 24px; display: flex; align-items: center; gap: 12px; }
-    header h1 { font-size: 1.5rem; font-weight: 700; }
-    .badge { background: #f97316; color: white; font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; letter-spacing: 1px; }
-cd ~/Desktop/nba-salaries
-git add .
-git commit -m "switch to ESPN free API"
-git push
-sudo npx vercel --prod
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.6">
+  <style type="text/css">
+    body {background-color: #0d0e12}
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;NBA Team Rosters&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>* { box-sizing: border-box; margin: 0; padding: 0; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>header { background: #1a1f2e; border-bottom: 2px solid #f97316; padding: 16px 24px; display: flex; align-items: center; gap: 12px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>header h1 { font-size: 1.5rem; font-weight: 700; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.badge { background: #f97316; color: white; font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; letter-spacing: 1px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.controls { padding: 20px 24px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>input[type=text] { background: #1a1f2e; border: 1px solid #2d3748; color: #e2e8f0; padding: 10px 16px; border-radius: 8px; font-size: 0.9rem; width: 280px; outline: none; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>input[type=text]:focus { border-color: #f97316; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; padding: 0 24px 40px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.card { background: #1a1f2e; border-radius: 12px; overflow: hidden; border: 1px solid #2d3748; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.card-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: #12172a; border-bottom: 1px solid #2d3748; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.card-header img { width: 36px; height: 36px; object-fit: contain; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.card-header h2 { font-size: 1rem; font-weight: 700; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.card-header span { font-size: 0.75rem; color: #94a3b8; margin-left: auto; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>th { text-align: left; padding: 8px 12px; color: #64748b; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; border-bottom: 1px solid #2d3748; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>td { padding: 7px 12px; border-bottom: 1px solid #1e2535; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>tr:last-child td { border-bottom: none; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>tr:hover td { background: #1e2a3a; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.pos { color: #f97316; font-weight: 700; font-size: 0.7rem; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.loading { text-align: center; padding: 80px; color: #64748b; font-size: 1.1rem; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.error { background: #2d1515; border: 1px solid #dc2626; border-radius: 8px; padding: 16px; margin: 24px; color: #fca5a5; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.count { color: #64748b; font-size: 0.85rem; padding: 0 24px 12px; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;header&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;span style="font-size:1.8rem"&gt;🏀&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;h1&gt;NBA Team Rosters&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;span class="badge"&gt;LIVE&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/header&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="controls"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;input type="text" id="search" placeholder="Search team or player..." oninput="filterCards()" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="count" id="count"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="output" class="loading"&gt;Loading live data...&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let allTeams = [];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>async function loadData() {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const res = await fetch('/api/salaries');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const data = await res.json();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (data.error) throw new Error(data.error);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>allTeams = data.teams;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>render(allTeams);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>} catch (e) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('output').innerHTML = '&lt;div class="error"&gt;Failed to load: ' + e.message + '&lt;/div&gt;';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function render(teams) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('count').textContent = teams.length + ' teams';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (!teams.length) { document.getElementById('output').innerHTML = '&lt;div class="loading"&gt;No results.&lt;/div&gt;'; return; }</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('output').className = 'grid';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('output').innerHTML = teams.map(t =&gt; '&lt;div class="card"&gt;&lt;div class="card-header"&gt;' + (t.logo ? '&lt;img src="' + t.logo + '" /&gt;' : '🏀') + '&lt;h2&gt;' + t.team + '&lt;/h2&gt;&lt;span&gt;' + t.abbreviation + ' · ' + t.players.length + ' players&lt;/span&gt;&lt;/div&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;#&lt;/th&gt;&lt;th&gt;Player&lt;/th&gt;&lt;th&gt;Pos&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;' + t.players.map(p =&gt; '&lt;tr&gt;&lt;td style="color:#475569"&gt;' + p.jersey + '&lt;/td&gt;&lt;td&gt;' + p.name + '&lt;/td&gt;&lt;td class="pos"&gt;' + p.position + '&lt;/td&gt;&lt;/tr&gt;').join('') + '&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;').join('');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function filterCards() {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const q = document.getElementById('search').value.toLowerCase();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (!q) { render(allTeams); return; }</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const filtered = allTeams.map(t =&gt; ({...t, players: t.players.filter(p =&gt; p.name.toLowerCase().includes(q))})).filter(t =&gt; t.team.toLowerCase().includes(q) || t.players.length &gt; 0);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>render(filtered);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>loadData();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
