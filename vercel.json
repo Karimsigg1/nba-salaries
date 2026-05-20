@@ -1,8 +1,5 @@
 {
   "version": 2,
-  "env": {
-    "BALLDONTLIE_API_KEY": "@balldontlie_api_key"
-  },
   "functions": {
     "api/salaries.js": { "runtime": "nodejs20.x" }
   },
