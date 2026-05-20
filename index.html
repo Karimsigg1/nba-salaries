@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NBA Team Salaries</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; }
+header { background: #16213e; padding: 18px 24px; border-bottom: 3px solid #e8722a; display: flex; align-items: center; gap: 14px; }
+header .logo { font-size: 28px; }
+header h1 { font-size: 22px; font-weight: 700; color: #fff; }
+header p { font-size: 12px; color: #aaa; margin-top: 2px; }
+.live-badge { background: #e8722a; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; letter-spacing: .05em; margin-left: 8px; vertical-align: middle; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+.container { max-width: 1060px; margin: 0 auto; padding: 24px 16px; }
+.controls { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.season-select { background: #16213e; color: #e0e0e0; border: 1px solid #2a3a5c; border-radius: 6px; padding: 7px 12px; font-size: 13px; cursor: pointer; }
+.season-select:focus { outline: none; border-color: #e8722a; }
+.search-box { background: #16213e; color: #e0e0e0; border: 1px solid #2a3a5c; border-radius: 6px; padding: 7px 12px; font-size: 13px; width: 200px; }
+.search-box::placeholder { color: #555; }
+.search-box:focus { outline: none; border-color: #e8722a; }
+.refresh-btn { background: #e8722a; color: #fff; border: none; border-radius: 6px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; letter-spacing: .04em; transition: background .2s; }
+.refresh-btn:hover { background: #d4621a; }
+.refresh-btn:disabled { background: #555; cursor: not-allowed; }
+.last-updated { margin-left: auto; font-size: 11px; color: #555; }
+.table-wrap { border-radius: 10px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.5); }
+table { width: 100%; border-collapse: collapse; background: #16213e; }
+thead tr { background: #0f3460; }
+th { padding: 13px 16px; text-align: left; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #aaa; white-space: nowrap; }
+th.r { width: 46px; text-align: center; }
+th.sal { text-align: right; cursor: pointer; user-select: none; color: #ccc; transition: color .2s; padding-right: 20px; }
+th.sal:hover { color: #fff; }
+th.sal.active { color: #e8722a; }
+th.sal .arr { display: inline-block; margin-left: 4px; opacity: .4; font-size: 10px; }
+th.sal.active .arr { opacity: 1; color: #e8722a; }
+tr.team-row { border-bottom: 1px solid #1e2d4a; transition: background .15s; cursor: pointer; }
+tr.team-row:hover { background: #1e2d4a; }
+tr.team-row.open { background: #182336; border-bottom: none; }
+td { padding: 11px 16px; font-size: 14px; vertical-align: middle; }
+td.r { text-align: center; font-weight: 700; color: #666; font-size: 13px; }
+.tc { display: flex; align-items: center; gap: 10px; }
+.sw { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.tn { font-weight: 600; color: #fff; font-size: 14px; }
+.ei { margin-left: auto; font-size: 10px; color: #e8722a; transition: transform .2s; }
+.ei.open { transform: rotate(90deg); }
+td.sv { text-align: right; font-variant-numeric: tabular-nums; padding-right: 20px; }
+td.sv.hi { color: #e8722a; font-weight: 700; font-size: 15px; }
+td.sv.lo { color: #ccc; font-size: 13px; }
+td.sv.mt { color: #555; font-size: 13px; }
+tr.drawer { display: none; }
+tr.drawer.open { display: table-row; }
+tr.drawer > td { padding: 0; background: #111827; border-bottom: 2px solid rgba(232,114,42,.15); }
+.ph { display: flex; align-items: center; padding: 7px 16px 7px 52px; background: #0d1f35; border-bottom: 1px solid #1e2d4a; }
+.ph-lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #555; }
+.ph-cols { margin-left: auto; font-size: 11px; color: #555; padding-right: 20px; }
+table.pt { width: 100%; border-collapse: collapse; }
+table.pt tr { border-bottom: 1px solid rgba(30,45,74,.5); transition: background .12s; }
+table.pt tr:last-child { border-bottom: none; }
+table.pt tr:hover { background: rgba(30,45,74,.4); }
+table.pt td { padding: 8px 16px; font-size: 13px; }
+td.pr { width: 46px; text-align: center; color: #444; font-size: 12px; }
+td.pn { padding-left: 36px; color: #c8d8e8; font-weight: 500; }
+td.pp { color: #555; font-size: 11px; width: 46px; }
+td.ps { text-align: right; font-variant-numeric: tabular-nums; padding-right: 20px; font-size: 13px; color: #ccc; }
+td.ps.top { color: #e8722a; font-weight: 700; }
+tr.sub { background: #0d1f35 !important; }
+tr.sub td { font-style: italic; color: #666 !important; font-size: 12px; }
+tfoot td { background: #0f3460; padding: 12px 16px; font-weight: 700; font-size: 13px; color: #ccc; }
+tfoot td.sv.hi { color: #e8722a; }
+.legend { margin-top: 14px; display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: #666; }
+.legend span { display: flex; align-items: center; gap: 5px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: #e8722a; }
+.loading-wrap { text-align: center; padding: 60px 20px; }
+.spinner { width: 40px; height: 40px; border: 3px solid #1e2d4a; border-top-color: #e8722a; border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 16px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { color: #aaa; font-size: 14px; }
+.loading-sub { color: #555; font-size: 12px; margin-top: 6px; }
+.error-wrap { background: #2a1a1a; border: 1px solid #5a2020; border-radius: 8px; padding: 20px 24px; margin: 20px 0; }
+.error-wrap h3 { color: #e87272; font-size: 14px; margin-bottom: 6px; }
+.error-wrap p { color: #aaa; font-size: 13px; line-height: 1.6; }
+.no-data { color: #555; font-size: 12px; font-style: italic; padding: 12px 16px 12px 52px; }
+.export-btn { background: #16213e; color: #aaa; border: 1px solid #2a3a5c; border-radius: 6px; padding: 7px 14px; font-size: 12px; cursor: pointer; transition: all .2s; }
+.export-btn:hover { border-color: #e8722a; color: #e8722a; }
+.cap-bar { background: #0d1f35; border-radius: 8px; padding: 12px 18px; margin-bottom: 16px; display: flex; gap: 24px; flex-wrap: wrap; font-size: 12px; }
+.cap-item { display: flex; flex-direction: column; gap: 3px; }
+.cap-label { color: #555; text-transform: uppercase; letter-spacing: .06em; font-size: 10px; }
+.cap-value { color: #e8722a; font-weight: 700; font-size: 15px; }
+.badge { display: inline-block; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+.badge-tax { background: #5a1010; color: #e87272; }
+.badge-cap { background: #2a3a10; color: #aed672; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🏀</div>
+  <div>
+    <h1>NBA Team Salaries <span class="live-badge">LIVE</span></h1>
+    <p id="header-sub">Loading live data…</p>
+  </div>
+</header>
+
+<div class="container">
+  <div class="controls">
+    <select class="season-select" id="season-select" onchange="onSeasonChange()">
+      <option value="2026">2026-27 Season</option>
+      <option value="2027">2027-28 Season</option>
+      <option value="2028">2028-29 Season</option>
+      <option value="2029">2029-30 Season</option>
+    </select>
+    <input class="search-box" id="search-box" type="text" placeholder="🔍  Search team or player…" oninput="onSearch()">
+    <button class="refresh-btn" id="refresh-btn" onclick="loadData()">↻ Refresh</button>
+    <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
+    <span class="last-updated" id="last-updated"></span>
+  </div>
+
+  <div class="cap-bar" id="cap-bar" style="display:none">
+    <div class="cap-item"><span class="cap-label">Salary Cap</span><span class="cap-value" id="cap-val">—</span></div>
+    <div class="cap-item"><span class="cap-label">Luxury Tax Line</span><span class="cap-value" id="tax-val">—</span></div>
+    <div class="cap-item"><span class="cap-label">League Total Committed</span><span class="cap-value" id="league-total">—</span></div>
+    <div class="cap-item"><span class="cap-label">Teams Over Tax</span><span class="cap-value" id="over-tax">—</span></div>
+  </div>
+
+  <div id="main-content">
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <div class="loading-text">Fetching live NBA salary data…</div>
+      <div class="loading-sub" id="loading-sub">Connecting to API</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Cap figures — 2026-27 confirmed (ESPN/Shams Mar 2026); outer years projected ~7% CBA growth
+const CAP = {
+  2026: { cap: 165000000, tax: 201000000, label: '2026-27' },
+  2027: { cap: 176550000, tax: 214000000, label: '2027-28 (proj.)' },
+  2028: { cap: 188900000, tax: 229000000, label: '2028-29 (proj.)' },
+  2029: { cap: 202100000, tax: 245000000, label: '2029-30 (proj.)' },
+};
+
+const COLORS = {
+  'Atlanta Hawks':'#C1D32F','Boston Celtics':'#007A33','Brooklyn Nets':'#444',
+  'Charlotte Hornets':'#1D1160','Chicago Bulls':'#CE1141','Cleveland Cavaliers':'#860038',
+  'Dallas Mavericks':'#00538C','Denver Nuggets':'#0E2240','Detroit Pistons':'#C8102E',
+  'Golden State Warriors':'#1D428A','Houston Rockets':'#CE1141','Indiana Pacers':'#002D62',
+  'Los Angeles Clippers':'#C8102E','Los Angeles Lakers':'#552583','Memphis Grizzlies':'#5D76A9',
+  'Miami Heat':'#98002E','Milwaukee Bucks':'#00471B','Minnesota Timberwolves':'#0C2340',
+  'New Orleans Pelicans':'#0C2340','New York Knicks':'#F58426','Oklahoma City Thunder':'#007AC1',
+  'Orlando Magic':'#0077C0','Philadelphia 76ers':'#006BB6','Phoenix Suns':'#E56020',
+  'Portland Trail Blazers':'#E03A3E','Sacramento Kings':'#5A2D81','San Antonio Spurs':'#888',
+  'Toronto Raptors':'#CE1141','Utah Jazz':'#002B5C','Washington Wizards':'#002B5C',
+};
+
+let teamTotals = [], currentSeason = 2026, openTeam = null, searchQuery = '';
+
+async function loadData() {
+  const btn = document.getElementById('refresh-btn');
+  btn.disabled = true; btn.textContent = 'Loading…';
+
+  document.getElementById('main-content').innerHTML = `
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <div class="loading-text">Fetching live NBA salary data…</div>
+      <div class="loading-sub">${CAP[currentSeason].label} · Pulling contracts from API</div>
+    </div>`;
+  document.getElementById('cap-bar').style.display = 'none';
+
+  try {
+    // Call our own Vercel proxy endpoint — no CORS, API key stays server-side
+    const res = await fetch(`/api/salaries?season=${currentSeason}`);
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || `Server error ${res.status}`);
+    }
+    const { data: contracts } = await res.json();
+
+    // Group by team
+    const byTeam = {};
+    for (const c of contracts) {
+      const name = c.team?.full_name;
+      if (!name) continue;
+      if (!byTeam[name]) byTeam[name] = [];
+      byTeam[name].push(c);
+    }
+    for (const name of Object.keys(byTeam)) {
+      byTeam[name].sort((a, b) => (b.cap_hit || 0) - (a.cap_hit || 0));
+    }
+
+    teamTotals = Object.entries(byTeam).map(([name, players]) => ({
+      name,
+      color: COLORS[name] || '#888',
+      total: players.reduce((s, p) => s + (p.cap_hit || 0), 0),
+      players,
+    })).sort((a, b) => b.total - a.total);
+
+    // Cap bar
+    const caps = CAP[currentSeason];
+    const leagueTotal = teamTotals.reduce((s, t) => s + t.total, 0);
+    const overTax = teamTotals.filter(t => t.total > caps.tax).length;
+    document.getElementById('cap-val').textContent = '$' + (caps.cap / 1e6).toFixed(0) + 'M';
+    document.getElementById('tax-val').textContent = '$' + (caps.tax / 1e6).toFixed(0) + 'M';
+    document.getElementById('league-total').textContent = '$' + (leagueTotal / 1e6).toFixed(1) + 'M';
+    document.getElementById('over-tax').textContent = overTax + ' teams';
+    document.getElementById('cap-bar').style.display = 'flex';
+
+    document.getElementById('header-sub').textContent =
+      `${caps.label} · ${contracts.length} contracts · ${teamTotals.length} teams`;
+    document.getElementById('last-updated').textContent =
+      'Updated ' + new Date().toLocaleTimeString();
+
+    render();
+
+  } catch (err) {
+    document.getElementById('main-content').innerHTML = `
+      <div class="error-wrap">
+        <h3>⚠ Failed to load data</h3>
+        <p>${err.message}</p>
+        <p style="margin-top:8px;font-size:11px;color:#555">
+          Make sure BALLDONTLIE_API_KEY is set in your Vercel environment variables.
+        </p>
+      </div>`;
+  }
+
+  btn.disabled = false; btn.textContent = '↻ Refresh';
+}
+
+function onSeasonChange() {
+  currentSeason = parseInt(document.getElementById('season-select').value);
+  openTeam = null;
+  loadData();
+}
+
+function onSearch() {
+  searchQuery = document.getElementById('search-box').value.toLowerCase();
+  render();
+}
+
+function fmtM(v) {
+  return v ? '$' + (v / 1e6).toFixed(1) + 'M' : '<span style="color:#555">—</span>';
+}
+function fmtFull(v) {
+  return v ? '$' + v.toLocaleString() : '<span style="color:#444">—</span>';
+}
+
+function toggle(name) {
+  openTeam = openTeam === name ? null : name;
+  render();
+}
+
+function buildPlayerRows(players) {
+  if (!players?.length) return '<div class="no-data">No contract data available for this season.</div>';
+  const top = Math.max(...players.map(p => p.cap_hit || 0));
+  const rows = players.map((p, i) => {
+    const name = (p.player?.first_name || '') + ' ' + (p.player?.last_name || '');
+    const isTop = p.cap_hit === top;
+    return `<tr>
+      <td class="pr">${i + 1}</td>
+      <td class="pn">${name}</td>
+      <td class="pp">${p.player?.position || '—'}</td>
+      <td class="ps${isTop ? ' top' : ''}">${fmtFull(p.cap_hit)}</td>
+    </tr>`;
+  }).join('');
+  const total = players.reduce((s, p) => s + (p.cap_hit || 0), 0);
+  return `<td colspan="4" style="padding:0">
+    <div class="ph"><span class="ph-lbl">Player</span><div class="ph-cols">Cap Hit</div></div>
+    <table class="pt"><tbody>${rows}
+      <tr class="sub">
+        <td class="pr"></td><td class="pn" colspan="2">Team Total</td>
+        <td class="ps">${fmtFull(total)}</td>
+      </tr>
+    </tbody></table>
+  </td>`;
+}
+
+function render() {
+  if (!teamTotals.length) return;
+  const caps = CAP[currentSeason];
+
+  let filtered = teamTotals;
+  if (searchQuery) {
+    filtered = teamTotals.map(t => {
+      if (t.name.toLowerCase().includes(searchQuery)) return t;
+      const mp = t.players.filter(p =>
+        ((p.player?.first_name || '') + ' ' + (p.player?.last_name || '')).toLowerCase().includes(searchQuery)
+      );
+      return mp.length ? { ...t, players: mp } : null;
+    }).filter(Boolean);
+  }
+
+  const sorted = [...filtered].sort((a, b) => b.total - a.total);
+
+  let tbHtml = '';
+  sorted.forEach((t, idx) => {
+    const isOpen = openTeam === t.name;
+    const overTax = caps.tax && t.total > caps.tax;
+    const overCap = !overTax && caps.cap && t.total > caps.cap;
+    const badge = overTax
+      ? '<span class="badge badge-tax">OVER TAX</span>'
+      : overCap ? '<span class="badge badge-cap">OVER CAP</span>' : '';
+
+    tbHtml += `
+      <tr class="team-row${isOpen ? ' open' : ''}" onclick="toggle('${t.name.replace(/'/g,"\\'")}')">
+        <td class="r">${idx + 1}</td>
+        <td><div class="tc">
+          <div class="sw" style="background:${t.color}"></div>
+          <span class="tn">${t.name}${badge}</span>
+          <span class="ei${isOpen ? ' open' : ''}">▶</span>
+        </div></td>
+        <td class="sv${isOpen ? ' hi' : ' lo'}">${fmtM(t.total)}</td>
+        <td class="sv lo" style="color:#555">${t.players.length} players</td>
+      </tr>
+      <tr class="drawer${isOpen ? ' open' : ''}">${buildPlayerRows(t.players)}</tr>`;
+  });
+
+  const leagueTotal = filtered.reduce((s, t) => s + t.total, 0);
+  const tfHtml = `<tr>
+    <td></td>
+    <td style="color:#fff;font-size:13px;text-transform:uppercase;letter-spacing:.05em">
+      League Total${searchQuery ? ' (filtered)' : ''}
+    </td>
+    <td class="sv hi">$${(leagueTotal / 1e6).toFixed(1)}M</td>
+    <td class="sv lo" style="color:#555">${filtered.reduce((s,t)=>s+t.players.length,0)} contracts</td>
+  </tr>`;
+
+  document.getElementById('main-content').innerHTML = `
+    <p style="font-size:12px;color:#666;margin-bottom:12px">
+      <b style="color:#e8722a">Click a team row</b> to see player breakdown · Sorted by total cap hit
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th class="r">#</th>
+          <th style="min-width:220px">Team</th>
+          <th class="sal active">Total Cap Hit <span class="arr">▼</span></th>
+          <th class="sal" style="color:#444">Roster Size</th>
+        </tr></thead>
+        <tbody>${tbHtml}</tbody>
+        <tfoot>${tfHtml}</tfoot>
+      </table>
+    </div>
+    <div class="legend">
+      <span><div class="dot"></div> Highest-paid player highlighted</span>
+      <span>▶ Click team to expand roster</span>
+      <span style="color:#e87272">■ OVER TAX = above luxury tax threshold</span>
+    </div>`;
+}
+
+function exportCSV() {
+  if (!teamTotals.length) { alert('No data loaded yet.'); return; }
+  const rows = [['Team','Player','Position','Cap Hit ($)','Season']];
+  for (const t of teamTotals) {
+    for (const p of t.players) {
+      rows.push([
+        t.name,
+        (p.player?.first_name || '') + ' ' + (p.player?.last_name || ''),
+        p.player?.position || '',
+        p.cap_hit || 0,
+        CAP[currentSeason].label
+      ]);
+    }
+  }
+  const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([csv], { type: 'text/csv' })),
+    download: `nba_salaries_${CAP[currentSeason].label.replace(/[^0-9-]/g,'')}.csv`
+  });
+  a.click();
+}
+
+loadData();
+</script>
+</body>
+</html>
