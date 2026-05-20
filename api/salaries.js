@@ -1,51 +1,24 @@
-// Vercel serverless function — proxies BallDontLie so the API key
-// stays server-side and CORS is never an issue for the browser.
 export default async function handler(req, res) {
-  // Allow the browser to call this endpoint
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET');
-
-  const season = parseInt(req.query.season) || 2026;
-
-  // Validate season range
-  if (season < 2026 || season > 2029) {
-    return res.status(400).json({ error: 'Season must be 2026–2029' });
-  }
-
-  const API_KEY = process.env.BALLDONTLIE_API_KEY;
-  const BASE = 'https://api.balldontlie.io/nba/v1';
-
   try {
-    let allContracts = [];
-    let cursor = null;
-
-    // Paginate through all contracts for this season
-    while (true) {
-      const url = `${BASE}/contracts?season=${season}&per_page=100` +
-        (cursor ? `&cursor=${cursor}` : '');
-
-      const apiRes = await fetch(url, {
-        headers: { Authorization: API_KEY }
-      });
-
-      if (!apiRes.ok) {
-        const text = await apiRes.text();
-        return res.status(apiRes.status).json({
-          error: `BallDontLie API error: ${apiRes.status}`,
-          detail: text
-        });
-      }
-
-      const json = await apiRes.json();
-      allContracts = allContracts.concat(json.data || []);
-
-      if (!json.meta?.next_cursor) break;
-      cursor = json.meta.next_cursor;
-    }
-
-    return res.status(200).json({ data: allContracts, season });
-
+    const response = await fetch('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams?limit=32');
+    const data = await response.json();
+    const teams = await Promise.all(
+      data.sports[0].leagues[0].teams.map(async (t) => {
+        const team = t.team;
+        const rosterRes = await fetch(`https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/${team.id}/roster`);
+        const rosterData = await rosterRes.json();
+        const athletes = rosterData.athletes || [];
+        const players = athletes.flatMap(g => g.items || []).map(p => ({
+          name: p.displayName,
+          position: p.position?.abbreviation || 'N/A',
+          jersey: p.jersey || '-',
+        }));
+        return { team: team.displayName, abbreviation: team.abbreviation, logo: team.logos?.[0]?.href || '', players };
+      })
+    );
+    res.status(200).json({ teams });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
 }
